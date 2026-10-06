@@ -1,0 +1,18 @@
+{
+  "$schema":"node_modules/wrangler/config-schema.json",
+  "name":"sites-admin-dashboard",
+  "main":"src/worker.mjs",
+  "account_id":"2664a69ebb52cd207c52ee76ea899f54",
+  "compatibility_date":"2026-10-04",
+  "workers_dev":false,
+  "preview_urls":false,
+  "assets":{"directory":"public","binding":"ASSETS","run_worker_first":true},
+  "routes":[{"pattern":"admin.third-ai.com","custom_domain":true}],
+  "vars":{"ADMIN_EMAIL":"gattim@gmail.com","ADMIN_ENABLED":"false"},
+  "version_metadata":{"binding":"VERSION"},
+  "d1_databases":[
+    {"binding":"MITCH_DB","database_name":"mitchometro","database_id":"36a2e0ed-e14f-40f8-8283-3c0208ae2601"},
+    {"binding":"TABI_DB","database_name":"japan-planner","database_id":"bac4c9a4-df6b-4b40-896d-58644b5f27b4"},
+    {"binding":"STRATA_DB","database_name":"strata","database_id":"ebda54a8-1126-4094-924c-0b14b2de84fb"}
+  ]
+}

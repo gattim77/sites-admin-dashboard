@@ -1,0 +1,19 @@
+{
+  "provider": "US Geological Survey",
+  "dataset": "Mineral Resources Data System",
+  "version": "Official CSV archive, member timestamp (2022, 8, 23, 15, 9, 2)",
+  "retrievedAt": "2026-09-30T13:51:26.694578+00:00",
+  "downloadUrl": "https://mrdata.usgs.gov/mrds/mrds-csv.zip",
+  "licence": "US public domain; use constraints none",
+  "licenceEvidence": "https://mrdata.usgs.gov/metadata/mrds.txt",
+  "sha256": "31be4baaa86b082787bc74989146183db21badf7157db39b3f0a6fe0b38a5477",
+  "coverage": [
+    -25,
+    34,
+    45,
+    72
+  ],
+  "recordCount": 2541,
+  "systematicUpdatesCeased": 2011,
+  "note": "A bounded European extract. Every source field is retained. Ore/gangue strings are historical identifications, not a modern verification or access grant."
+}

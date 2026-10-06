@@ -1,0 +1,34 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "strata",
+  "main": "./build/cloudflare-worker.ts",
+  "compatibility_date": "2026-05-15",
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
+  "workers_dev": false,
+  "preview_urls": false,
+  "assets": {
+    "directory": "dist/client",
+    "binding": "ASSETS",
+    "not_found_handling": "none"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "strata",
+      "database_id": "ebda54a8-1126-4094-924c-0b14b2de84fb",
+      "migrations_dir": "drizzle"
+    }
+  ],
+  "observability": {
+    "enabled": true
+  },
+  "account_id": "2664a69ebb52cd207c52ee76ea899f54",
+  "routes": [
+    {
+      "pattern": "strata.third-ai.com",
+      "custom_domain": true
+    }
+  ]
+}

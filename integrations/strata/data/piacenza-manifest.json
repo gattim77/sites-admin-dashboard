@@ -1,0 +1,172 @@
+{
+  "retrievedAt": "2026-09-30T14:27:46.859123+00:00",
+  "extent": [
+    9.15,
+    44.45,
+    10.15,
+    45.2
+  ],
+  "scope": "Piacenza province for ISPRA mines and regional geosites; bounding-box surroundings for other regional features.",
+  "counts": {
+    "area": 38,
+    "geosite": 34,
+    "geotrail": 40,
+    "heritage": 173,
+    "mine": 40,
+    "museum": 14,
+    "outcrop": 78,
+    "parking": 76,
+    "resource": 145,
+    "shelter": 6,
+    "spring": 235,
+    "trail": 397,
+    "viewpoint": 31,
+    "visitor": 2
+  },
+  "sources": [
+    {
+      "layer": "Geositi_catasto_punti",
+      "sourceUrl": "https://servizigis.regione.emilia-romagna.it/wfs/geositi?service=WFS&version=2.0.0&request=GetFeature&typeNames=portale_geositi%3AGeositi_catasto_punti&outputFormat=GEOJSON&srsName=EPSG%3A4326&bbox=44.45%2C9.15%2C45.2%2C10.15%2CEPSG%3A4326&count=10000",
+      "retrievedAt": "2026-09-30T14:29:58.327736+00:00",
+      "sha256": "a5cddd4785a598bbb4afbce8e0e0d5db13acfb34573761c03a1c5017ef11ed2c",
+      "returned": 96,
+      "included": 38,
+      "licence": "CC BY 4.0"
+    },
+    {
+      "layer": "Geositi_catasto_aree",
+      "sourceUrl": "https://servizigis.regione.emilia-romagna.it/wfs/geositi?service=WFS&version=2.0.0&request=GetFeature&typeNames=portale_geositi%3AGeositi_catasto_aree&outputFormat=GEOJSON&srsName=EPSG%3A4326&bbox=44.45%2C9.15%2C45.2%2C10.15%2CEPSG%3A4326&count=10000",
+      "retrievedAt": "2026-09-30T14:29:58.425806+00:00",
+      "sha256": "cec9d7a5e10f0a13e5b89071000a1b58b17f07bd97a76441a5a27ed1a0d541cb",
+      "returned": 99,
+      "included": 38,
+      "licence": "CC BY 4.0"
+    },
+    {
+      "layer": "Itinerari_geoambientali",
+      "sourceUrl": "https://servizigis.regione.emilia-romagna.it/wfs/geositi?service=WFS&version=2.0.0&request=GetFeature&typeNames=portale_geositi%3AItinerari_geoambientali&outputFormat=GEOJSON&srsName=EPSG%3A4326&bbox=44.45%2C9.15%2C45.2%2C10.15%2CEPSG%3A4326&count=10000",
+      "retrievedAt": "2026-09-30T14:29:58.030800+00:00",
+      "sha256": "770ded0c7f846f28358ab19d40d2ed9a5e286d2b70b23d0f0c1e3e96c9777bc6",
+      "returned": 40,
+      "included": 40,
+      "licence": "CC BY 4.0"
+    },
+    {
+      "layer": "Risorse_prospezioni_10k",
+      "sourceUrl": "https://servizigis.regione.emilia-romagna.it/wfs/geologia10k?service=WFS&version=2.0.0&request=GetFeature&typeNames=portale_geologia10k%3ARisorse_prospezioni_10k&outputFormat=GEOJSON&srsName=EPSG%3A4326&bbox=44.45%2C9.15%2C45.2%2C10.15%2CEPSG%3A4326&count=10000",
+      "retrievedAt": "2026-09-30T14:29:57.961692+00:00",
+      "sha256": "e9ad483fc099fff9d28db73be70a744716f13fd8a80a963b3755a3244fb8fef4",
+      "returned": 110,
+      "included": 110,
+      "licence": "CC BY 4.0"
+    },
+    {
+      "layer": "Risorse_prospezioni_50k",
+      "sourceUrl": "https://servizigis.regione.emilia-romagna.it/wfs/geologia50k?service=WFS&version=2.0.0&request=GetFeature&typeNames=portale_geologia50k%3ARisorse_prospezioni_50k&outputFormat=GEOJSON&srsName=EPSG%3A4326&bbox=44.45%2C9.15%2C45.2%2C10.15%2CEPSG%3A4326&count=10000",
+      "retrievedAt": "2026-09-30T14:29:58.295157+00:00",
+      "sha256": "258bf5115e8b0e836040204ab75da145f8764f67f0219754ec5920723491f539",
+      "returned": 35,
+      "included": 35,
+      "licence": "CC BY 4.0"
+    },
+    {
+      "layer": "Affioramenti_punti_10k",
+      "sourceUrl": "https://servizigis.regione.emilia-romagna.it/wfs/geologia10k?service=WFS&version=2.0.0&request=GetFeature&typeNames=portale_geologia10k%3AAffioramenti_punti_10k&outputFormat=GEOJSON&srsName=EPSG%3A4326&bbox=44.45%2C9.15%2C45.2%2C10.15%2CEPSG%3A4326&count=10000",
+      "retrievedAt": "2026-09-30T14:29:58.353290+00:00",
+      "sha256": "696647107b80e61b956deddb51cd1e6584eb8e9254ac8965461490571b006a37",
+      "returned": 78,
+      "included": 78,
+      "licence": "CC BY 4.0"
+    },
+    {
+      "layer": "Parcheggio",
+      "sourceUrl": "https://servizigis.regione.emilia-romagna.it/wfs/rete_escursionistica?service=WFS&version=2.0.0&request=GetFeature&typeNames=portale_rete_escursionistica%3AParcheggio&outputFormat=GEOJSON&srsName=EPSG%3A4326&bbox=44.45%2C9.15%2C45.2%2C10.15%2CEPSG%3A4326&count=10000",
+      "retrievedAt": "2026-09-30T14:29:58.722646+00:00",
+      "sha256": "50aeaa4cb1bf7b9963ce69424496460104f898dc6c81820bc3a1c29f9d7e1497",
+      "returned": 76,
+      "included": 76,
+      "licence": "CC BY 4.0"
+    },
+    {
+      "layer": "Museo",
+      "sourceUrl": "https://servizigis.regione.emilia-romagna.it/wfs/rete_escursionistica?service=WFS&version=2.0.0&request=GetFeature&typeNames=portale_rete_escursionistica%3AMuseo&outputFormat=GEOJSON&srsName=EPSG%3A4326&bbox=44.45%2C9.15%2C45.2%2C10.15%2CEPSG%3A4326&count=10000",
+      "retrievedAt": "2026-09-30T14:29:58.710525+00:00",
+      "sha256": "1127db09af1628acd950dbc3f285e7b326fa60fd9948faf92f6059dd6ef66aad",
+      "returned": 14,
+      "included": 14,
+      "licence": "CC BY 4.0"
+    },
+    {
+      "layer": "Sorgente_o_fontana",
+      "sourceUrl": "https://servizigis.regione.emilia-romagna.it/wfs/rete_escursionistica?service=WFS&version=2.0.0&request=GetFeature&typeNames=portale_rete_escursionistica%3ASorgente_o_fontana&outputFormat=GEOJSON&srsName=EPSG%3A4326&bbox=44.45%2C9.15%2C45.2%2C10.15%2CEPSG%3A4326&count=10000",
+      "retrievedAt": "2026-09-30T14:29:58.880066+00:00",
+      "sha256": "15323c93bf99cf8567766dd76a425ef602a5cb3f5d77fa03f6a1dc51d6eaf4e5",
+      "returned": 235,
+      "included": 235,
+      "licence": "CC BY 4.0"
+    },
+    {
+      "layer": "Punto_panoramico_a_360_gradi",
+      "sourceUrl": "https://servizigis.regione.emilia-romagna.it/wfs/rete_escursionistica?service=WFS&version=2.0.0&request=GetFeature&typeNames=portale_rete_escursionistica%3APunto_panoramico_a_360_gradi&outputFormat=GEOJSON&srsName=EPSG%3A4326&bbox=44.45%2C9.15%2C45.2%2C10.15%2CEPSG%3A4326&count=10000",
+      "retrievedAt": "2026-09-30T14:29:58.819030+00:00",
+      "sha256": "7ac771f8b7c0795df241b33a0ccd450888a228541f447c93e2b3ad052e81a273",
+      "returned": 31,
+      "included": 31,
+      "licence": "CC BY 4.0"
+    },
+    {
+      "layer": "Emergenza_antropico_ambientale",
+      "sourceUrl": "https://servizigis.regione.emilia-romagna.it/wfs/rete_escursionistica?service=WFS&version=2.0.0&request=GetFeature&typeNames=portale_rete_escursionistica%3AEmergenza_antropico_ambientale&outputFormat=GEOJSON&srsName=EPSG%3A4326&bbox=44.45%2C9.15%2C45.2%2C10.15%2CEPSG%3A4326&count=10000",
+      "retrievedAt": "2026-09-30T14:29:59.203509+00:00",
+      "sha256": "bddcfa2b47302636a42f47ce509b049ba90e095fd50fcef1751c3d96fb5dedfb",
+      "returned": 173,
+      "included": 173,
+      "licence": "CC BY 4.0"
+    },
+    {
+      "layer": "Percorso_escursionistico",
+      "sourceUrl": "https://servizigis.regione.emilia-romagna.it/wfs/rete_escursionistica?service=WFS&version=2.0.0&request=GetFeature&typeNames=portale_rete_escursionistica%3APercorso_escursionistico&outputFormat=GEOJSON&srsName=EPSG%3A4326&bbox=44.45%2C9.15%2C45.2%2C10.15%2CEPSG%3A4326&count=10000",
+      "retrievedAt": "2026-09-30T14:30:00.800228+00:00",
+      "sha256": "b86c59899be7c5fc72d2a336ece65dce5f2258f8a9a49e1c82feff1ccc068426",
+      "returned": 397,
+      "included": 397,
+      "licence": "CC BY 4.0"
+    },
+    {
+      "layer": "Rifugio_gestito",
+      "sourceUrl": "https://servizigis.regione.emilia-romagna.it/wfs/rete_escursionistica?service=WFS&version=2.0.0&request=GetFeature&typeNames=portale_rete_escursionistica%3ARifugio_gestito&outputFormat=GEOJSON&srsName=EPSG%3A4326&bbox=44.45%2C9.15%2C45.2%2C10.15%2CEPSG%3A4326&count=10000",
+      "retrievedAt": "2026-09-30T14:29:59.193823+00:00",
+      "sha256": "5c26efe18703038b77752eb5201229350e6034206c50be72f8aef70d526892a1",
+      "returned": 4,
+      "included": 4,
+      "licence": "CC BY 4.0"
+    },
+    {
+      "layer": "Bivacco",
+      "sourceUrl": "https://servizigis.regione.emilia-romagna.it/wfs/rete_escursionistica?service=WFS&version=2.0.0&request=GetFeature&typeNames=portale_rete_escursionistica%3ABivacco&outputFormat=GEOJSON&srsName=EPSG%3A4326&bbox=44.45%2C9.15%2C45.2%2C10.15%2CEPSG%3A4326&count=10000",
+      "retrievedAt": "2026-09-30T14:29:59.259847+00:00",
+      "sha256": "3aab43a71f613ee0f195d6dd23ea6b6a942e57b4c5fcd915daa4308fddbaa80b",
+      "returned": 2,
+      "included": 2,
+      "licence": "CC BY 4.0"
+    },
+    {
+      "layer": "Centro_visita_di_Parco_o_Riserva_naturale",
+      "sourceUrl": "https://servizigis.regione.emilia-romagna.it/wfs/rete_escursionistica?service=WFS&version=2.0.0&request=GetFeature&typeNames=portale_rete_escursionistica%3ACentro_visita_di_Parco_o_Riserva_naturale&outputFormat=GEOJSON&srsName=EPSG%3A4326&bbox=44.45%2C9.15%2C45.2%2C10.15%2CEPSG%3A4326&count=10000",
+      "retrievedAt": "2026-09-30T14:29:59.567156+00:00",
+      "sha256": "44dce7749c49970db717c8b4d24ab93d1fc19f7565c9733ca3faf9e09d592a73",
+      "returned": 2,
+      "included": 2,
+      "licence": "CC BY 4.0"
+    },
+    {
+      "layer": "ISPRA mining census",
+      "sourceUrl": "https://sgi2.isprambiente.it/arcgis/rest/services/servizi/siti_dismessi/MapServer/0/query?where=UPPER(Provincia)%3D%27PIACENZA%27&outFields=*&outSR=4326&f=pjson",
+      "retrievedAt": "2026-09-30T14:27:46.859123+00:00",
+      "sha256": "c414710614c3985da44f8b0fe53157b44d0cf1b61fdeb6df45b4fb587b855b1e",
+      "returned": 36,
+      "included": 36,
+      "licence": "ISPRA default CC BY 4.0; https://www.isprambiente.gov.it/it/note-legali"
+    }
+  ]
+}
