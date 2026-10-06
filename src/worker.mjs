@@ -45,7 +45,8 @@ async function users(env,url){
    const db=env[site.binding];
    const storage=site.storage?'s.bytes_used,s.object_count,s.upload_count,s.last_upload,s.historical_uploads_unknown':'NULL AS bytes_used,NULL AS object_count,NULL AS upload_count,NULL AS last_upload,NULL AS historical_uploads_unknown';
    const join=site.storage?'LEFT JOIN third_admin_storage s ON s.user_id=u.id':'';
-   const args=[after];let where='u.id>?';
+   const exactId=url.searchParams.get('id');
+   const args=[exactId||after];let where=exactId?'u.id=?':'u.id>?';
    if(query){where+=' AND u.email LIKE ? ESCAPE CHAR(92)';args.push('%'+query.replace(/[\\%_]/g,'\\$&')+'%');}
    if(status==='active'||status==='blocked'){where+=" AND COALESCE(c.status,'active')=?";args.push(status);}
    if(min>0){where+=site.storage?' AND COALESCE(s.bytes_used,0)>=?':' AND 0>=?';args.push(min);}
@@ -106,6 +107,12 @@ export async function handle(request,env,ctx,auth=verifyAdmin){
   if(!['GET','HEAD'].includes(request.method))return json({error:'Method not allowed'},405);
   if(url.pathname==='/api/overview')return json(await overview(env,url));
   if(url.pathname==='/api/users')return json({applications:await users(env,url)});
+  if(url.pathname==='/api/user'){
+   if(!url.searchParams.get('site')||!url.searchParams.get('id'))return json({error:'Application and user ID required'},400);
+   const found=await users(env,url);const user=found[0]?.users[0];if(!user)return json({error:'User not found or unavailable'},404);
+   const applications=await Promise.all(sites.map(async s=>{try{const row=await env[s.binding].prepare('SELECT id FROM app_users WHERE email=?').bind(user.email).first();return row?{site:s.id,userId:row.id}:null;}catch{return null;}}));
+   return json({user:{...user,site:found[0].site,applications:applications.filter(Boolean)}});
+  }
   if(url.pathname==='/api/audit')return json({applications:await audit(env,url)});
   if(url.pathname==='/api/system')return json({commit:revision,version:env.VERSION?.id||null,admin:actor.email,access:true,siteBindings:sites.map(s=>({site:s.id,configured:!!env[s.binding]})),cost:'Cloudflare Workers Free and existing D1; no paid services added',mfa:'Required by Cloudflare Access policy; deployment must verify TOTP policy before ADMIN_ENABLED=true'});
   if(url.pathname==='/api/analytics'){
