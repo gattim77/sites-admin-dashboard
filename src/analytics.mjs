@@ -10,7 +10,7 @@ export async function readAnalytics(env,url){
   if(!/^[a-f0-9]{32}$/.test(tags[site.id]||''))return {site:site.id,status:'unavailable',reason:'No Web Analytics site identifier configured'};
   const filter=`filter:{siteTag:${JSON.stringify(tags[site.id])},datetime_geq:${JSON.stringify(new Date(range.start).toISOString())},datetime_lt:${JSON.stringify(new Date(range.end).toISOString())}}`;
   const groups={trend:'date',countries:'countryName',devices:'deviceType',browsers:'browserName',operatingSystems:'operatingSystemName',referrers:'refererHost',pages:'requestPath'};
-  // Schema validated against Cloudflare GraphQL during production integration; failures are shown rather than invented data.
+  // Validate the optional RUM schema during integration before configuring this adapter; failures remain unavailable.
   const fields=Object.entries(groups).map(([alias,dimension])=>`${alias}:rumPageloadEventsAdaptiveGroups(limit:500,${filter}){count sum{visits} dimensions{${dimension}}}`).join('\n');
   const response=await fetch('https://api.cloudflare.com/client/v4/graphql',{method:'POST',headers:{Authorization:`Bearer ${env.CF_ANALYTICS_TOKEN}`,'Content-Type':'application/json'},body:JSON.stringify({query:`{viewer{accounts(filter:{accountTag:${JSON.stringify(env.CF_ACCOUNT_ID)}}){${fields}}}}`}),signal:AbortSignal.timeout(15000)});
   const body=await response.json();if(!response.ok||body.errors)return {site:site.id,status:'unavailable',reason:'Cloudflare analytics query unavailable; verify token permissions, retention and schema'};
