@@ -1,4 +1,5 @@
 import { verifyAdmin, validConfig, sameOriginMutation, json, secure, ADMIN } from './security.mjs';
+import { authRoute } from './auth.mjs';
 import { revision } from './revision.mjs';
 export const sites = [
  {id:'mitchometro',name:'Mitchometro',host:'mitchometro.third-ai.com',binding:'MITCH_DB',storage:true},
@@ -96,8 +97,18 @@ async function audit(env,url){const {start,end}=dateRange(url);return Promise.al
 export async function handle(request,env,ctx,auth=verifyAdmin){
  const url=new URL(request.url);
  if(url.hostname!=='admin.third-ai.com')return json({error:'Unknown hostname'},421);
- if(!validConfig(env))return json({error:'Administration is locked pending Access and MFA configuration'},503);
- let actor;try{actor=await auth(request,env);}catch{return json({error:'Administrator authentication required'},403);}
+ if(!validConfig(env))return json({error:'Administration authentication is not configured'},503);
+ try {
+  if(url.pathname.startsWith('/auth/'))return await authRoute(request,env);
+  if(['/login','/login.js','/login.css'].includes(url.pathname)&&request.method==='GET'){
+   const asset=new Request(new URL(url.pathname==='/login'?'/login.html':url.pathname,url.origin),request);
+   return secure(await env.ASSETS.fetch(asset));
+  }
+ }catch{return json({error:'Authentication temporarily unavailable'},503);}
+ let actor;try{actor=await auth(request,env);}catch{
+  if(['/', '/index.html'].includes(url.pathname))return secure(Response.redirect(url.origin+'/login',303));
+  return json({error:'Administrator authentication required'},401);
+ }
  try{
   if(request.method==='POST'){
    const match=url.pathname.match(/^\/api\/users\/([^/]+)\/([^/]+)$/);
@@ -114,7 +125,7 @@ export async function handle(request,env,ctx,auth=verifyAdmin){
    return json({user:{...user,site:found[0].site,applications:applications.filter(Boolean)}});
   }
   if(url.pathname==='/api/audit')return json({applications:await audit(env,url)});
-  if(url.pathname==='/api/system')return json({commit:revision,version:env.VERSION?.id||null,admin:actor.email,access:true,siteBindings:sites.map(s=>({site:s.id,configured:!!env[s.binding]})),cost:'Cloudflare Workers Free and existing D1; no paid services added',mfa:'Required by Cloudflare Access policy; deployment must verify TOTP policy before ADMIN_ENABLED=true'});
+  if(url.pathname==='/api/system')return json({commit:revision,version:env.VERSION?.id||null,admin:actor.email,access:false,siteBindings:sites.map(s=>({site:s.id,configured:!!env[s.binding]})),cost:'Cloudflare Workers Free and existing D1; no paid services added',mfa:'Password and authenticator TOTP; encrypted secret, replay prevention, one-hour server session'});
   if(url.pathname==='/api/analytics'){
    const {readAnalytics}=await import('./analytics.mjs');return json(await readAnalytics(env,url));
   }

@@ -19,7 +19,7 @@
   ],
   "vars": {
     "ADMIN_EMAIL": "gattim@gmail.com",
-    "ADMIN_ENABLED": "false"
+    "ADMIN_ENABLED": "true"
   },
   "version_metadata": {
     "binding": "VERSION"

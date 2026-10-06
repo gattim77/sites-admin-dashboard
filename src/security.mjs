@@ -1,5 +1,3 @@
-import { createRemoteJWKSet, jwtVerify } from 'jose';
-const sets = new Map();
 export const ADMIN = 'gattim@gmail.com';
 export const securityHeaders = {
   'Cache-Control':'no-store', 'X-Content-Type-Options':'nosniff',
@@ -9,25 +7,11 @@ export const securityHeaders = {
   'Content-Security-Policy':"default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'none'; form-action 'self'; object-src 'none'"
 };
 export function validConfig(env) {
-  return env.ADMIN_ENABLED === 'true' && env.ADMIN_EMAIL === ADMIN &&
-    /^https:\/\/[a-z0-9-]+\.cloudflareaccess\.com$/.test(env.ACCESS_ISSUER || '') &&
-    /^[a-f0-9]{64}$/.test(env.ACCESS_AUD || '');
+ return env.ADMIN_ENABLED === 'true' && env.ADMIN_EMAIL === ADMIN && /^[A-Za-z0-9_-]{43}$/.test(env.ADMIN_AUTH_KEY || '') && !!env.MITCH_DB;
 }
-export async function verifyAdmin(request, env, keySet) {
-  if(!validConfig(env))throw new Error('Administration is locked');
-  const token=request.headers.get('Cf-Access-Jwt-Assertion');
-  if(!token || token.length>16384)throw new Error('Authentication required');
-  let keys=keySet;
-  if(!keys){
-    keys=sets.get(env.ACCESS_ISSUER);
-    if(!keys){keys=createRemoteJWKSet(new URL(env.ACCESS_ISSUER+'/cdn-cgi/access/certs'));sets.set(env.ACCESS_ISSUER,keys);}
-  }
-  const {payload}=await jwtVerify(token, keys, {
-    issuer:env.ACCESS_ISSUER,audience:env.ACCESS_AUD, algorithms:['RS256'],
-    requiredClaims:['exp','iat','sub','email','aud','iss'],clockTolerance:5
-  });
-  if(payload.email !== ADMIN || typeof payload.sub!=='string' || !payload.sub)throw new Error('Forbidden');
-  return {email:ADMIN,sub:payload.sub};
+export async function verifyAdmin(request,env) {
+ const { authenticate }=await import('./auth.mjs');
+ return authenticate(request,env);
 }
 export function sameOriginMutation(request) {
   return request.headers.get('origin') === new URL(request.url).origin &&
