@@ -10,16 +10,16 @@ INSERT INTO third_admin_storage(user_id,object_count,bytes_used,upload_count,las
  last_upload=MAX(third_admin_storage.last_upload,excluded.last_upload),updated_at=excluded.updated_at;
 CREATE TRIGGER IF NOT EXISTS third_admin_profile_insert_guard BEFORE INSERT ON listening_profiles
 BEGIN
- SELECT CASE WHEN EXISTS(SELECT 1 FROM third_admin_controls WHERE user_id=NEW.owner_id AND (status='blocked' OR uploads_enabled=0)) THEN RAISE(ABORT,'Uploads unavailable') END;
- SELECT CASE WHEN EXISTS(SELECT 1 FROM third_admin_controls c WHERE c.user_id=NEW.owner_id AND c.max_object_bytes IS NOT NULL AND length(CAST(NEW.summary AS BLOB))>c.max_object_bytes) THEN RAISE(ABORT,'File quota exceeded') END;
- SELECT CASE WHEN EXISTS(SELECT 1 FROM third_admin_controls c WHERE c.user_id=NEW.owner_id AND c.max_bytes IS NOT NULL AND COALESCE((SELECT bytes_used FROM third_admin_storage WHERE user_id=NEW.owner_id),0)-COALESCE((SELECT length(CAST(summary AS BLOB)) FROM listening_profiles WHERE owner_id=NEW.owner_id AND role=NEW.role),0)+length(CAST(NEW.summary AS BLOB))>c.max_bytes) THEN RAISE(ABORT,'Storage quota exceeded') END;
+ SELECT RAISE(ABORT,'Uploads unavailable') WHERE EXISTS(SELECT 1 FROM third_admin_controls WHERE user_id=NEW.owner_id AND (status='blocked' OR uploads_enabled=0));
+ SELECT RAISE(ABORT,'File quota exceeded') WHERE EXISTS(SELECT 1 FROM third_admin_controls c WHERE c.user_id=NEW.owner_id AND c.max_object_bytes IS NOT NULL AND length(CAST(NEW.summary AS BLOB))>c.max_object_bytes);
+ SELECT RAISE(ABORT,'Storage quota exceeded') WHERE EXISTS(SELECT 1 FROM third_admin_controls c WHERE c.user_id=NEW.owner_id AND c.max_bytes IS NOT NULL AND COALESCE((SELECT bytes_used FROM third_admin_storage WHERE user_id=NEW.owner_id),0)-COALESCE((SELECT length(CAST(summary AS BLOB)) FROM listening_profiles WHERE owner_id=NEW.owner_id AND role=NEW.role),0)+length(CAST(NEW.summary AS BLOB))>c.max_bytes);
 END;
 CREATE TRIGGER IF NOT EXISTS third_admin_profile_update_guard BEFORE UPDATE ON listening_profiles
 BEGIN
- SELECT CASE WHEN NEW.owner_id!=OLD.owner_id THEN RAISE(ABORT,'Profile owner cannot change') END;
- SELECT CASE WHEN EXISTS(SELECT 1 FROM third_admin_controls WHERE user_id=NEW.owner_id AND (status='blocked' OR uploads_enabled=0)) THEN RAISE(ABORT,'Uploads unavailable') END;
- SELECT CASE WHEN EXISTS(SELECT 1 FROM third_admin_controls c WHERE c.user_id=NEW.owner_id AND c.max_object_bytes IS NOT NULL AND length(CAST(NEW.summary AS BLOB))>c.max_object_bytes) THEN RAISE(ABORT,'File quota exceeded') END;
- SELECT CASE WHEN EXISTS(SELECT 1 FROM third_admin_controls c WHERE c.user_id=NEW.owner_id AND c.max_bytes IS NOT NULL AND COALESCE((SELECT bytes_used FROM third_admin_storage WHERE user_id=NEW.owner_id),0)-length(CAST(OLD.summary AS BLOB))+length(CAST(NEW.summary AS BLOB))>c.max_bytes) THEN RAISE(ABORT,'Storage quota exceeded') END;
+ SELECT RAISE(ABORT,'Profile owner cannot change') WHERE NEW.owner_id!=OLD.owner_id;
+ SELECT RAISE(ABORT,'Uploads unavailable') WHERE EXISTS(SELECT 1 FROM third_admin_controls WHERE user_id=NEW.owner_id AND (status='blocked' OR uploads_enabled=0));
+ SELECT RAISE(ABORT,'File quota exceeded') WHERE EXISTS(SELECT 1 FROM third_admin_controls c WHERE c.user_id=NEW.owner_id AND c.max_object_bytes IS NOT NULL AND length(CAST(NEW.summary AS BLOB))>c.max_object_bytes);
+ SELECT RAISE(ABORT,'Storage quota exceeded') WHERE EXISTS(SELECT 1 FROM third_admin_controls c WHERE c.user_id=NEW.owner_id AND c.max_bytes IS NOT NULL AND COALESCE((SELECT bytes_used FROM third_admin_storage WHERE user_id=NEW.owner_id),0)-length(CAST(OLD.summary AS BLOB))+length(CAST(NEW.summary AS BLOB))>c.max_bytes);
 END;
 CREATE TRIGGER IF NOT EXISTS third_admin_profile_insert_account AFTER INSERT ON listening_profiles
 BEGIN
