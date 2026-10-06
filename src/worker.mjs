@@ -101,8 +101,8 @@ export async function handle(request,env,ctx,auth=verifyAdmin){
  try {
   if(url.pathname.startsWith('/auth/'))return await authRoute(request,env);
   if(['/login','/login.js','/login.css'].includes(url.pathname)&&request.method==='GET'){
-   const asset=new Request(new URL(url.pathname==='/login'?'/login.html':url.pathname,url.origin),request);
-   return secure(await env.ASSETS.fetch(asset));
+   // Assets resolves /login to login.html; using /login.html would redirect back to /login.
+   return secure(await env.ASSETS.fetch(request));
   }
  }catch{return json({error:'Authentication temporarily unavailable'},503);}
  let actor;try{actor=await auth(request,env);}catch{
