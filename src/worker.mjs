@@ -1,9 +1,11 @@
+import {ingest,readGeo} from './geoconversion.mjs';
 import { verifyAdmin, validConfig, sameOriginMutation, json, secure, ADMIN } from './security.mjs';
 import { authRoute } from './auth.mjs';
 import { revision } from './revision.mjs';
 export const sites = [
  {id:'mitchometro',name:'Mitchometro',host:'mitchometro.third-ai.com',binding:'MITCH_DB',storage:true},
  {id:'tabi',name:'TABI',host:'japan-planner.third-ai.com',binding:'TABI_DB',storage:false},
+ {id:'geoconversion',name:'GeoConversion',host:'geoconversion.third-ai.com',binding:'STRATA_DB',storage:false,anonymous:true},
  {id:'strata',name:'Strata',host:'strata.third-ai.com',binding:'STRATA_DB',storage:false}
 ];
 export function dateRange(url, now=Date.now()) {
@@ -13,12 +15,13 @@ export function dateRange(url, now=Date.now()) {
  if(!Number.isFinite(start)||!Number.isFinite(end)||start>end||end-start>366*86400000||end>now+86400000)throw new Error('Invalid date range (maximum 366 days)');
  return {start,end};
 }
-function dbFor(env,id){const site=sites.find(s=>s.id===id);if(!site||!env[site.binding])throw new Error('Unknown application');return {site,db:env[site.binding]};}
+function dbFor(env,id){const site=sites.find(s=>s.id===id);if(!site||site.anonymous||!env[site.binding])throw new Error('Unknown application');return {site,db:env[site.binding]};}
 async function rows(db,sql,args=[]){const result=await db.prepare(sql).bind(...args).all();if(!result.success)throw new Error('Database query unavailable');return result.results;}
 async function overview(env,url) {
  const {start,end}=dateRange(url);
  const result=await Promise.all(sites.map(async site=>{
   const db=env[site.binding];
+  if(site.anonymous){try{const operational=await readGeo(env,url);return {...site,total:{users:null,registrations:null},trend:[],activity:[],storage:null,status:'connected',operational};}catch{return {...site,total:null,trend:[],activity:[],storage:null,status:'unavailable'};}}
   try{
    const [total,trend,activity,storage]=await Promise.all([
     db.prepare('SELECT COUNT(*) AS users, SUM(CASE WHEN created_at>=? AND created_at<? THEN 1 ELSE 0 END) AS registrations FROM app_users').bind(start,end).first(),
@@ -39,7 +42,8 @@ async function users(env,url){
  const after=url.searchParams.get('after')||'';
  const min=Number(url.searchParams.get('minBytes')||0);
  if(!Number.isSafeInteger(min)||min<0)throw new Error('Invalid storage filter');
- const chosen=selected?sites.filter(s=>s.id===selected):sites;
+ const chosen=(selected?sites.filter(s=>s.id===selected):sites).filter(s=>!s.anonymous);
+ if(selected==='geoconversion')return [{site:selected,status:'connected',users:[],next:null}];
  if(!chosen.length)throw new Error('Unknown application');
  return Promise.all(chosen.map(async site=>{
   try{
@@ -93,9 +97,10 @@ export async function mutateUser(request,env,actor,siteId,userId){
  const result=await db.batch(statements);if(result.some(r=>!r.success))throw new Error('Administrative action failed');
  return json({ok:true});
 }
-async function audit(env,url){const {start,end}=dateRange(url);return Promise.all(sites.map(async s=>{try{return {site:s.id,records:await rows(env[s.binding],'SELECT id,occurred_at,actor,action,target_user,details FROM third_admin_audit WHERE occurred_at>=? AND occurred_at<? ORDER BY occurred_at DESC LIMIT 250',[start,end]),status:'connected'};}catch{return {site:s.id,records:[],status:'unavailable'};}}));}
+async function audit(env,url){const {start,end}=dateRange(url);return Promise.all(sites.filter(s=>!s.anonymous).map(async s=>{try{return {site:s.id,records:await rows(env[s.binding],'SELECT id,occurred_at,actor,action,target_user,details FROM third_admin_audit WHERE occurred_at>=? AND occurred_at<? ORDER BY occurred_at DESC LIMIT 250',[start,end]),status:'connected'};}catch{return {site:s.id,records:[],status:'unavailable'};}}));}
 export async function handle(request,env,ctx,auth=verifyAdmin){
  const url=new URL(request.url);
+ if(url.hostname==='geoconversion.telemetry.internal'&&url.pathname==='/aggregate')return ingest(request,env);
  if(url.hostname!=='admin.third-ai.com')return json({error:'Unknown hostname'},421);
  if(!validConfig(env))return json({error:'Administration authentication is not configured'},503);
  try {
@@ -121,11 +126,12 @@ export async function handle(request,env,ctx,auth=verifyAdmin){
   if(url.pathname==='/api/user'){
    if(!url.searchParams.get('site')||!url.searchParams.get('id'))return json({error:'Application and user ID required'},400);
    const found=await users(env,url);const user=found[0]?.users[0];if(!user)return json({error:'User not found or unavailable'},404);
-   const applications=await Promise.all(sites.map(async s=>{try{const row=await env[s.binding].prepare('SELECT id FROM app_users WHERE email=?').bind(user.email).first();return row?{site:s.id,userId:row.id}:null;}catch{return null;}}));
+   const applications=await Promise.all(sites.filter(s=>!s.anonymous).map(async s=>{try{const row=await env[s.binding].prepare('SELECT id FROM app_users WHERE email=?').bind(user.email).first();return row?{site:s.id,userId:row.id}:null;}catch{return null;}}));
    return json({user:{...user,site:found[0].site,applications:applications.filter(Boolean)}});
   }
   if(url.pathname==='/api/audit')return json({applications:await audit(env,url)});
   if(url.pathname==='/api/system')return json({commit:revision,version:env.VERSION?.id||null,admin:actor.email,access:false,siteBindings:sites.map(s=>({site:s.id,configured:!!env[s.binding]})),cost:'Cloudflare Workers Free and existing D1; no paid services added',mfa:'Password and authenticator TOTP; encrypted secret, replay prevention, one-hour server session'});
+  if(url.pathname==='/api/geoconversion')return json(await readGeo(env,url));
   if(url.pathname==='/api/analytics'){
    const {readAnalytics}=await import('./analytics.mjs');return json(await readAnalytics(env,url));
   }

@@ -1,3 +1,4 @@
+import {readGeo,geoTraffic} from './geoconversion.mjs';
 import { dateRange, sites } from './worker.mjs';
 // Only aggregate dimensions are queried. No visitor identifiers, IP addresses, query strings, or user joins.
 const cache=new Map();
@@ -7,6 +8,7 @@ export async function readAnalytics(env,url){
  let tags;try{tags=JSON.parse(env.RUM_SITE_TAGS);}catch{return {status:'unavailable',reason:'Invalid Web Analytics configuration',sites:[],range};}
  const key=JSON.stringify([range,tags]);const old=cache.get(key);if(old&&old.expires>Date.now())return old.value;
  const result=await Promise.all(sites.map(async site=>{
+  if(site.anonymous){try{return geoTraffic(await readGeo(env,new URL('https://admin.third-ai.com/?start='+new Date(range.start).toISOString()+'&end='+new Date(range.end).toISOString())));}catch{return {site:site.id,status:'unavailable',reason:'Operational aggregate migration not yet available'};}}
   if(!/^[a-f0-9]{32}$/.test(tags[site.id]||''))return {site:site.id,status:'unavailable',reason:'No Web Analytics site identifier configured'};
   const filter=`filter:{siteTag:${JSON.stringify(tags[site.id])},datetime_geq:${JSON.stringify(new Date(range.start).toISOString())},datetime_lt:${JSON.stringify(new Date(range.end).toISOString())}}`;
   const groups={trend:'date',countries:'countryName',devices:'deviceType',browsers:'browserName',operatingSystems:'operatingSystemName',referrers:'refererHost',pages:'requestPath'};
@@ -24,6 +26,7 @@ export async function readAnalytics(env,url){
 async function readD1Analytics(env,range){
  const dimensions={countries:['country','countryName'],devices:['device','deviceType'],browsers:['browser','browserName'],operatingSystems:['os','operatingSystemName'],referrers:['referrer','refererHost'],pages:['route','requestPath']};
  const result=await Promise.all(sites.map(async site=>{
+  if(site.anonymous){try{return geoTraffic(await readGeo(env,new URL('https://admin.third-ai.com/?start='+new Date(range.start).toISOString()+'&end='+new Date(range.end).toISOString())));}catch{return {site:site.id,status:'unavailable',reason:'Operational aggregate migration not yet available'};}}
   const db=env[site.binding];
   try{
    const query=async(sql)=>{const r=await db.prepare(sql).bind(range.start,range.end).all();if(!r.success)throw new Error('Unavailable');return r.results;};

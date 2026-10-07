@@ -38,3 +38,7 @@ Workers Free and D1 Free stop/degrade when quotas are exhausted. D1 currently in
 ## Operational limits
 
 Strata's photo service currently has no R2 binding and returns storage unavailable. The portal does not claim to measure nonexistent object storage. Deployment and native authentication enrollment status are recorded in `docs/STATUS.md`; unfinished production checks must not be reported as successful.
+
+## GeoConversion operational analytics
+
+GeoConversion appears in global traffic and application selection, with a dedicated `#site/geoconversion` detail page. It has no registered users or sessions. Apply `migrations/geoconversion.sql` to Strata's existing D1 database before deployment. The converter has a Cloudflare service binding to this Worker; the internal aggregate endpoint uses the unrouted hostname `geoconversion.telemetry.internal`. Public `admin.third-ai.com` continues to require the existing password/MFA session and cannot access that ingestion route. Accepted fields are event and source-format enums, integer processing duration, input-size bucket and Cloudflare country code. Unknown fields are rejected. Stored data is hourly counters and duration sums, retained 90 days. No files, GPS data, imported timestamps, filenames, account IDs or visitor IDs are collected. Existing site bindings, authentication and account controls are preserved.
